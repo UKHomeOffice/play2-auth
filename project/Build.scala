@@ -26,12 +26,12 @@ object ApplicationBuild extends Build {
       name                    := appName,
       credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
       resolvers ++= Seq(
-        "Artifactory Snapshot Realm" at "http://artifactory.registered-traveller.homeoffice.gov.uk/artifactory/libs-snapshot-local/",
-        "Artifactory Release Realm" at "http://artifactory.registered-traveller.homeoffice.gov.uk/artifactory/libs-release-local/",
-        "Artifactory External Release Local Realm" at "http://artifactory.registered-traveller.homeoffice.gov.uk/artifactory/ext-release-local/"
+        "Artifactory Snapshot Realm" at "https://artifactory.digital.homeoffice.gov.uk/artifactory/libs-snapshot-local/",
+        "Artifactory Release Realm" at "https://artifactory.digital.homeoffice.gov.uk/artifactory/libs-release-local/",
+        "Artifactory External Release Local Realm" at "https://artifactory.digital.homeoffice.gov.uk/artifactory/ext-release-local/"
       ),
       publishTo := {
-        val artifactory = "http://artifactory.registered-traveller.homeoffice.gov.uk/"
+        val artifactory = "https://artifactory.digital.homeoffice.gov.uk/"
         Some("release"  at artifactory + "artifactory/libs-release-local")
       }
     )
