@@ -11,7 +11,7 @@ object ApplicationBuild extends Build {
   val playVersion = "2.7.3"
 
   lazy val baseSettings = Seq(
-    version            := "0.17.0-UKHO",
+    version            := "0.17.1-UKHO",
     scalaVersion       := "2.12.6",
     organization       := "jp.t2v",
     scalacOptions      ++= Seq("-language:_", "-deprecation")
