@@ -14,12 +14,12 @@ trait AsyncIdContainer[Id] {
 
 }
 object AsyncIdContainer {
-  def apply[A](underlying: IdContainer[A]): AsyncIdContainer[A] = new AsyncIdContainer[A] {
+  def apply[A](underlying: AsyncIdContainer[A]): AsyncIdContainer[A] = new AsyncIdContainer[A] {
     import Future.{successful => future}
     def startNewSession(userId: A, timeoutInSeconds: Int)(implicit request: RequestHeader, context: ExecutionContext): Future[AuthenticityToken] =
-      future(underlying.startNewSession(userId, timeoutInSeconds))
+      underlying.startNewSession(userId, timeoutInSeconds)
     def remove(token: AuthenticityToken)(implicit context: ExecutionContext): Future[Unit] = future(underlying.remove(token))
-    def get(token: AuthenticityToken)(implicit context: ExecutionContext): Future[Option[A]] = future(underlying.get(token))
+    def get(token: AuthenticityToken)(implicit context: ExecutionContext): Future[Option[A]] = underlying.get(token)
     def prolongTimeout(token: AuthenticityToken, timeoutInSeconds: Int)(implicit request: RequestHeader, context: ExecutionContext): Future[Unit] =
       future(underlying.prolongTimeout(token, timeoutInSeconds))
   }

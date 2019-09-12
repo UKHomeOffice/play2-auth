@@ -1,20 +1,19 @@
 package jp.t2v.lab.play2.auth
 
+import play.api.mvc.RequestHeader
+
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.Exception._
 
-class TransparentIdContainer[Id: ToString: FromString] extends IdContainer[Id] {
+class TransparentIdContainer[Id: ToString: FromString] extends AsyncIdContainer[Id] {
 
-  def startNewSession(userId: Id, timeoutInSeconds: Int) = implicitly[ToString[Id]].apply(userId)
+  override def startNewSession(userId: Id, timeoutInSeconds: Int)(implicit request: RequestHeader, context: ExecutionContext): Future[AuthenticityToken] = Future.successful(implicitly[ToString[Id]].apply(userId))
 
-  def remove(token: AuthenticityToken) {
-  }
+  override def remove(token: AuthenticityToken)(implicit context: ExecutionContext): Future[Unit] = Future.unit
 
-  def get(token: AuthenticityToken) = implicitly[FromString[Id]].apply(token)
+  override def get(token: AuthenticityToken)(implicit context: ExecutionContext): Future[Option[Id]] = Future.successful(implicitly[FromString[Id]].apply(token))
 
-  def prolongTimeout(token: AuthenticityToken, timeoutInSeconds: Int) {
-    // Cookie Id Container does not support timeout.
-  }
-
+  override def prolongTimeout(token: AuthenticityToken, timeoutInSeconds: Int)(implicit request: RequestHeader, context: ExecutionContext): Future[Unit] = Future.unit
 }
 
 trait ToString[A] {

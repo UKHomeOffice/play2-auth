@@ -1,7 +1,5 @@
 package controllers
 
-import javax.inject.Inject
-
 import models._
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -11,14 +9,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.reflect.{ ClassTag, classTag }
 import jp.t2v.lab.play2.auth._
-import jp.t2v.lab.play2.auth.social.providers.twitter.{ TwitterController, TwitterProviderUserSupport }
-import jp.t2v.lab.play2.auth.social.providers.facebook.{ FacebookController, FacebookProviderUserSupport }
-import jp.t2v.lab.play2.auth.social.providers.github.{ GitHubController, GitHubProviderUserSupport }
+import jp.t2v.lab.play2.auth.social.providers.twitter.{TwitterProviderUserSupport, TwitterController}
+import jp.t2v.lab.play2.auth.social.providers.facebook.{FacebookProviderUserSupport, FacebookController}
+import jp.t2v.lab.play2.auth.social.providers.github.{GitHubProviderUserSupport, GitHubController}
 import jp.t2v.lab.play2.auth.social.providers.slack.SlackController
-import play.api.Environment
-import play.api.cache.CacheApi
 
-class Application @Inject() (val environment: Environment, val cacheApi: CacheApi) extends Controller with OptionalAuthElement with AuthConfigImpl with Logout {
+object Application extends Controller with OptionalAuthElement with AuthConfigImpl with Logout {
 
   def index = StackAction { implicit request =>
     DB.readOnly { implicit session =>
@@ -44,10 +40,6 @@ trait AuthConfigImpl extends AuthConfig {
   val idTag: ClassTag[Id] = classTag[Id]
   val sessionTimeoutInSeconds: Int = 3600
 
-  val cacheApi: CacheApi
-
-  val idContainer: AsyncIdContainer[Id] = AsyncIdContainer(new CacheIdContainer[Id](cacheApi))
-
   def resolveUser(id: Id)(implicit ctx: ExecutionContext): Future[Option[User]] =
     Future.successful(DB.readOnly { implicit session =>
       User.find(id)
@@ -71,7 +63,7 @@ trait AuthConfigImpl extends AuthConfig {
 
 }
 
-class FacebookAuthController @Inject() (val environment: Environment, val cacheApi: CacheApi) extends FacebookController
+object FacebookAuthController extends FacebookController
     with AuthConfigImpl
     with FacebookProviderUserSupport {
 
@@ -101,7 +93,7 @@ class FacebookAuthController @Inject() (val environment: Environment, val cacheA
 
 }
 
-class GitHubAuthController @Inject() (val environment: Environment, val cacheApi: CacheApi) extends GitHubController
+object GitHubAuthController extends GitHubController
     with AuthConfigImpl
     with GitHubProviderUserSupport {
 
@@ -131,7 +123,7 @@ class GitHubAuthController @Inject() (val environment: Environment, val cacheApi
 
 }
 
-class TwitterAuthController @Inject() (val environment: Environment, val cacheApi: CacheApi) extends TwitterController
+object TwitterAuthController extends TwitterController
     with AuthConfigImpl
     with TwitterProviderUserSupport {
 
@@ -161,7 +153,7 @@ class TwitterAuthController @Inject() (val environment: Environment, val cacheAp
 
 }
 
-class SlackAuthController @Inject() (val environment: Environment, val cacheApi: CacheApi) extends SlackController
+object SlackAuthController extends SlackController
     with AuthConfigImpl {
 
   override def onOAuthLinkSucceeded(accessToken: AccessToken, consumerUser: User)(implicit request: RequestHeader, ctx: ExecutionContext): Future[Result] = {
